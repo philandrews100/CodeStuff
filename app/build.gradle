@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'androidx.navigation.safeargs'
+
 
 android {
     compileSdkVersion 28
@@ -13,22 +14,96 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
         }
     }
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    flavorDimensions "dimension"
+    productFlavors {
+        dev {
+            dimension "dimension"
+            resConfigs "en", "xxhdpi"
+            versionCode 1
+        }
+        prod {
+            dimension "dimension"
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+    buildToolsVersion '28.0.3'
+}
+
+androidExtensions {
+    experimental = true
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
-    implementation 'androidx.core:core-ktx:1.1.0-alpha03'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    // kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // kotlin coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_coroutines"
+    // appcompat
+    implementation "androidx.appcompat:appcompat:$androidx_appcompat"
+    // architecture
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_extensions"
+    // navigation
+    implementation "android.arch.navigation:navigation-common-ktx:$android_navigation"
+    implementation "android.arch.navigation:navigation-fragment-ktx:$android_navigation"
+    implementation "android.arch.navigation:navigation-ui-ktx:$android_navigation"
+    // kotlin extensions
+    implementation "androidx.core:core-ktx:$androidx_core"
+    // constraint layout
+    implementation "androidx.constraintlayout:constraintlayout:$androidx_constraint_layout"
+    // glide
+    implementation "com.github.bumptech.glide:glide:$glide"
+    // retrofit and moshi
+    implementation "com.squareup.retrofit2:retrofit:$squareup_retrofit"
+    implementation "com.squareup.retrofit2:converter-moshi:$squareup_retrofit"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$squareup_retrofit"
+    implementation "com.squareup.moshi:moshi:$squareup_moshi"
+    implementation "com.squareup.moshi:moshi-kotlin:$squareup_moshi"
+    implementation "com.squareup.moshi:moshi-adapters:$squareup_moshi"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$squareup_moshi"
+    implementation "ru.gildor.coroutines:kotlin-coroutines-retrofit:$gildor_coroutines"
+    //reactivex rxjava
+    implementation "io.reactivex.rxjava2:rxandroid:$reactivex_rxjava2"
+    // rounded image view
+    implementation "com.makeramen:roundedimageview:$rounded_imageview"
+    //shape view
+    implementation "com.github.florent37:shapeofview:$shape_of_view"
+    //Gravity snap helper
+    implementation "com.github.rubensousa:gravitysnaphelper:$gravity_snap_helper"
+    //joda time
+    implementation "net.danlew:android.joda:$joda_time"
+
+
+    // testing
+    testImplementation "junit:junit:$junit"
+    androidTestImplementation "androidx.test:runner:$androidx_test_runner"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidx_test_espresso"
+
+}
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
